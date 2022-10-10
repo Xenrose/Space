@@ -92,15 +92,12 @@ def check_name(sat_name=str,check_list=list): #TLE 중 TBA 등 필요 없는 라
 
 
 def sending_mail(to_mail=to_mail): #재처리 완료된 TLE를 메일로 전송
-    f_year = dt.now().year
-    f_month = dt.now().month
-    if f_month < 10: f_month = "0"+ str(dt.now().month)
-    f_day = dt.now().day
-    if f_day < 10: f_day = "0"+"0"+ str(dt.now().day)
+    f_year = str(dt.now().year)
+    f_month = '{:0>2}'.format(str(dt.now().month))
+    f_day = '{:0>2}'.format(str(dt.now().day))
 
-
-    togo_file_name = str(f_year)+str(f_month)+str(f_day)+"_TLE(re).txt"
-    msg_title = str(f_year)+str(f_month)+str(f_day)+"_TLE"
+    togo_file_name = f_year+f_month+f_day+"_TLE(re).txt"
+    msg_title = f_year+f_month+f_day++"_TLE"
 
     recipients = []
     for mail in to_mail:

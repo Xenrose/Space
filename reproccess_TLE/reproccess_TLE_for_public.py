@@ -1,6 +1,9 @@
 #사용된 import / pip download시 참고
 # 내장 모듈 - re, time, os, datatime
-# pip - smtplib, selenium, webdriver, schedule
+# pip install smtplib
+# pip install schedule
+# pip install selenium
+# pip install webdriver-manager
 
 import re
 import time
@@ -97,7 +100,7 @@ def sending_mail(to_mail=to_mail): #재처리 완료된 TLE를 메일로 전송
     f_day = '{:0>2}'.format(str(dt.now().day))
 
     togo_file_name = f_year+f_month+f_day+"_TLE(re).txt"
-    msg_title = f_year+f_month+f_day++"_TLE"
+    msg_title = f_year+f_month+f_day+"_TLE"
 
     recipients = []
     for mail in to_mail:

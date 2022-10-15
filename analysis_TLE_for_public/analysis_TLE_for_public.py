@@ -1,3 +1,8 @@
+# 내장 모듈 - time, os, datetime
+# pip install pandas
+# pip install wbdriver-manager
+# pip install selenium
+
 import pandas as pd
 import time
 from datetime import datetime as dt
@@ -11,14 +16,11 @@ import matplotlib.pyplot as plt
 
 downloadPath = "C:\\Users\\{}\\Desktop\\Space\\analysis_TLE".format(os.getlogin()) #작업이 이루어질 dir
 
-spacetrack_id = ""
-spacetrack_password = ""
+spacetrack_id = ""          # TLE 다운을 위한 spacetarck id
+spacetrack_password = ""    # TLE 다운을 위한 spacetrack pw
 
-# inclination = 2
-# RAAN = 3
-# aop = argument of perigee = 5
-# mean anomaly = 6
-# mean motion = 7
+
+
 
 
 def check_Path(downloadPath=downloadPath):   # dir 존재 유무 후 없을시 폴더 생성
@@ -26,9 +28,11 @@ def check_Path(downloadPath=downloadPath):   # dir 존재 유무 후 없을시 �
     else: os.makedirs(downloadPath)
 
 
-def download_file(tle_list):
-    options = Options()
+def download_file(tle_list):                # 분석할 TLE가 담긴 list를 파라미터로 받아 해당 tle를 자동으로 다운로드
+    options = Options()                     # 단, spacetrack 정책상 1시간에 60개 이상의 tle 다운로드는 지양
     options.headless = False
+    # https://www.whatismybrowser.com/detect/what-is-my-user-agent/
+    # 위 주소에서 user_agent를 확인 가능
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
     options.add_argument('user-agent=' + user_agent)
     options.add_experimental_option('prefs',{'download.default_directory':downloadPath})
@@ -64,31 +68,31 @@ def download_file(tle_list):
         ret = ret.replace('</pre></body></html>',"")
 
         time.sleep(1)
-        w = open(downloadPath+"\\TLE\\"+str(tle)+".txt", "w", encoding="utf8") # norad 번호 입력
+        w = open(downloadPath+"\\TLE_raw\\"+str(tle)+".txt", "w", encoding="utf8") # norad 번호 입력
         w.write(ret)
         w.close()
 
     time.sleep(1)
     print("파일 다운로드 완료\t ",dt.now())
 
-def ex_tle(tle,index):
-    if tle[0] == '2':
+def ex_tle(tle,index):      # tle 중 line2 정보가 담긴 list를 파라미터로 입력받고 tle[index]를 반환
+    if tle[0] == '2':       # tle[index]는 inclination. RAAN, aop 등의 사용자가 필요로 하는 tle 정보
         return tle[index]
 
-def ex_all_figure(norad,tle_name):
-    filename = str(norad)
-    r = open(downloadPath +"\\TLE\\" + filename + ".txt", "r", encoding="utf8")
+def ex_all_figure(norad,tle_name):      # download한 tle를 읽어서 2차원 list로 만든 뒤 
+    filename = str(norad)               # 하나씩 요소를 분석하여 matplot을 통해 시각화 하는 함수
+    r = open(downloadPath +"\\TLE_raw\\" + filename + ".txt", "r", encoding="utf8")
     line = r.read().splitlines()
     temp = []
 
     for i in range(len(line)):
         temp.append(line[i].split())
 
-    inclination = []
-    RAAN = []
-    aop = []
-    mean_anomaly = []
-    mean_motion = []
+    inclination = []        # inclination = 2
+    RAAN = []               # RAAN = 3
+    aop = []                # aop = argument of perigee = 5
+    mean_anomaly = []       # mean anomaly = 6
+    mean_motion = []        # mean motion = 7
 
     for i in temp:
         if ex_tle(i,2): inclination.append(float(ex_tle(i,2)))
@@ -108,7 +112,6 @@ def ex_all_figure(norad,tle_name):
     incli_reverse = []
     for i in range(len(inclination)-1,0,-1):
         ret = inclination[i] - inclination[i-1]
-        # temp_c.append(abs(ret))
         incli_reverse.append(ret)
 
     incli_reverse.reverse()
@@ -133,6 +136,7 @@ def ex_all_figure(norad,tle_name):
 
 
 if __name__=="__main__":
+    start_time = dt.now()
     tle_list = [52894,52895,52896,52897,52898,52899,52900,
     25544,48274, # iss, css
     44918,47379,49446, # starlink 1099, 2099, 3099
@@ -158,13 +162,10 @@ if __name__=="__main__":
         25242:'IRIDUM 53 DEB'
     }
 
-    # download_file(tle_list)
 
     for tle in tle_list:
         ex_all_figure(tle,tle_name)
 
     print("실행 완료")
-
-    ##########
-    # plt 그래프 사진 설정
-    # 인클리네이션을 절대값으로 표기 vs 그대로 표기
+    end_time = dt.now()
+    print("실행시간: ",end_time-start_time)    
